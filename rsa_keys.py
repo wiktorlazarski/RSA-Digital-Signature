@@ -81,7 +81,11 @@ class RSAKeys:
 	def n(self, n):
 		self.__n = n
 
-keys = RSAKeys.generate(10)
-c = pow(2, keys.e, keys.n)
-m = pow(c, keys.d, keys.n)
-print(f"e = {keys.e} \t d = {keys.d} \t msg = {m}")
+if __name__ == "__main__":
+	msg = 23
+	keys = RSAKeys.generate(10)
+	encryption = pow(msg, keys.e, keys.n)
+	if (decryption := pow(encryption, keys.d, keys.n)) != msg:
+		print(f"TEST FAILED : {msg} \t=>\t {decryption}")
+	else:	
+		print(f"TEST PASSED : {msg} \t=>\t {decryption}")
