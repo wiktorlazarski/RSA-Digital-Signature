@@ -1,3 +1,4 @@
+import random
 from random import randint
 from math import gcd
 
@@ -5,7 +6,44 @@ class RSAKeys:
 	'''Class produces and represents keys for RSA algorithm.'''
 
 	@staticmethod
-	def list_primes(lo, hi):	
+	def generate(bits=5):
+		'''Generates public and private key as well as n = p * q value used in cipher.
+
+			Parameters:
+			bits (int): Specifies the number of bits used to create e, d, n
+
+			Returns:
+			int: e - public key
+			int: d - private key
+			int: n - quotient of two prime numbers used to produce keys
+		'''
+		primes = RSAKeys.list_primes(2 ** (bits - 1) + 1, 2 ** bits)
+		
+		p, q = random.sample(primes, 2)
+		n = p * q
+		phi_n = (p - 1) * (q - 1)
+		
+		primes.remove(p)
+		primes.remove(q)
+		primes = [p for p in primes if gcd(p, phi_n) == 1]
+
+		e = primes[randint(0, len(primes) - 1)]
+		d = e
+		while (e * d) % phi_n != 1: d = d + 1
+		
+		return RSAKeys(e, d, n)
+
+	@staticmethod
+	def list_primes(lo, hi):
+		'''Returns a list of prime numbers in a given range [lo, hi).
+
+			Parameters:
+			lo (int): lower boundary of search space
+			hi (int): higher boundary of search space
+
+			Returns:
+			[]: list of prime numbers between [lo, hi)
+		'''	
 		primes = []
 		for num in range(lo, hi, 2):
 			for i in range(2, num):
@@ -16,36 +54,34 @@ class RSAKeys:
 
 		return primes
 
-	@staticmethod
-	def generate_prime_pair(lo, hi):
-		primes = RSAKeys.list_primes(lo, hi)
+	def __init__(self, e, d, n):
+		self.e, self.d, self.n = e, d, n
 
-		f_idx = randint(0, len(primes) - 1)
-		first = primes.pop(f_idx)
-		
-		s_idx = randint(0, len(primes) - 1)
-		second = primes[s_idx]
+	@property
+	def e(self):
+		return self.__e
 
-		return (first, second)
+	@e.setter
+	def e(self, e):
+		self.__e = e
 
-	def __init__(self, bits=1024):
-		self.e, self.d = self.generate(bits)
+	@property
+	def d(self):
+		return self.__d
 
-	def generate(self, bits):
-		p, q = RSAKeys.generate_prime_pair(2 ** (bits - 1) + 1, 2 ** bits)
-		
-		self.n = p * q
-		phi_n = (p - 1) * (q - 1)
+	@d.setter
+	def d(self, d):
+		self.__d = d
 
-		return self.generate_keys(phi_n)
+	@property
+	def n(self):
+		return self.__n
 
-	def generate_keys(self, phi_n):
-		primes = RSAKeys.list_primes(1, phi_n)
-		primes = [p for p in primes if gcd(p, phi_n) == 1]
+	@n.setter
+	def n(self, n):
+		self.__n = n
 
-		e = primes[randint(0, len(primes) - 1)]
-	
-		d = 1
-		while (e * d) % phi_n != 1: d = d + 1
-
-		return e, d
+keys = RSAKeys.generate(10)
+c = pow(2, keys.e, keys.n)
+m = pow(c, keys.d, keys.n)
+print(f"e = {keys.e} \t d = {keys.d} \t msg = {m}")
