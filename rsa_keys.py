@@ -85,7 +85,8 @@ if __name__ == "__main__":
 	msg = 23
 	keys = RSAKeys.generate(10)
 	encryption = pow(msg, keys.e, keys.n)
-	if (decryption := pow(encryption, keys.d, keys.n)) != msg:
+	decryption = pow(encryption, keys.d, keys.n)
+	if decryption != msg:
 		print(f"TEST FAILED : {msg} \t=>\t {decryption}")
 	else:	
 		print(f"TEST PASSED : {msg} \t=>\t {decryption}")
