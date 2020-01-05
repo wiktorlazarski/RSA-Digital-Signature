@@ -31,7 +31,7 @@ class RSASignature:
         '''Produces signature from a given hash.
 
 			Parameters:
-			message (int): already hashed plain text message that will be converted into signature.
+			hash (int): already hashed plain text message that will be converted into signature.
 
 			Returns:
 			int: encrypted hash / RSA digital signature
@@ -66,4 +66,3 @@ if __name__ == '__main__':
 
     print(sign.decrypt(sign.encrypt_hash(2 ** 14)))
     print(2 ** 14)
-    
